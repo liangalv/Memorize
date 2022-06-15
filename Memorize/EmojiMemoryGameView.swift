@@ -1,11 +1,6 @@
-//
 //  EmojiMemoryGameView.swift
 //  Memorize
-//
 //  Created by Alvin Liang on 2022-05-06.
-//
-// High level ideas
-//
 
 
 import SwiftUI
@@ -15,18 +10,18 @@ struct EmojiMemoryGameView: View {
     
     
     var body: some View {
-        ScrollView{
-            LazyVGrid(columns:[GridItem(.adaptive(minimum: 65))]){                 ForEach(game.cards){card in
-                CardView(card: card)
-                    .aspectRatio(2/3, contentMode: .fit)
-                    .onTapGesture{
-                        game.choose(card)
-                    }
-                
-            }
-                
-            }.padding(.horizontal).foregroundColor(.red)
+        AspectVGrid(items: game.cards, aspectRatio: 2/3){card in
+            CardView(card: card)
+            
+                .aspectRatio(2/3, contentMode: .fit)
+                .onTapGesture{
+                    game.choose(card)
+                }
         }
+        
+                
+                
+           
     }
 }
 
