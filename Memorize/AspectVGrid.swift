@@ -12,13 +12,32 @@ struct AspectVGrid<Item, ItemView>: View where ItemView: View, Item: Identifiabl
     var aspectRatio: CGFloat
     var content: (Item) -> ItemView
     // now we need to start using these elements in order to generate our view combiner
+    init(items: [Item], aspectRatio: CGFloat, @ViewBuilder   content: @escaping (Item) -> ItemView){
+        //notice that we have to add @escaping here, as the closure that gets passed into the the INIT function gets passed to variable and held onto meaning that it "escapes" this context
+        //this is important as Structs and Enums are value types meaning that they just get passed around, but classes and functions are reference types meaning there is memory allocation in the heap for them
+        // and will really determine whether this function is "in-lined" or held onto
+        self.items = items
+        self.aspectRatio = aspectRatio
+        self.content = content
+    }
     var body: some View {
-        let width: CGFloat = 100
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: width))]){
-            ForEach(items) {item in
-                content(item).aspectRatio(aspectRatio, contentMode: .fit)
+        VStack{
+            GeometryReader{geometry in
+            let width: CGFloat = widthThatFits(itemCount: items.count, in: geometry.size, itemAspectRatio: aspectRatio)
+            LazyVGrid(columns: [adaptiveGridItem(width: width)], spacing: 0){
+                ForEach(items) {item in
+                    content(item).aspectRatio(aspectRatio, contentMode: .fit)
+                }
             }
         }
+        Spacer(minLength: 0)
+        }
+        
+    }
+    private func adaptiveGridItem(width: CGFloat) -> GridItem{
+        var griditem = GridItem(.adaptive(minimum: width))
+        griditem.spacing = 0
+        return griditem
     }
     private func widthThatFits(itemCount: Int, in size: CGSize, itemAspectRatio: CGFloat) -> CGFloat {
         var columnCount = 1

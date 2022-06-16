@@ -12,12 +12,11 @@ struct EmojiMemoryGameView: View {
     var body: some View {
         AspectVGrid(items: game.cards, aspectRatio: 2/3){card in
             CardView(card: card)
-            
-                .aspectRatio(2/3, contentMode: .fit)
+                .padding(4)
                 .onTapGesture{
                     game.choose(card)
                 }
-        }
+        }.foregroundColor(.red).padding(.horizontal)
         
                 
                 
@@ -37,17 +36,18 @@ struct CardView: View {
             ZStack{
                 let shape = RoundedRectangle(cornerRadius: DrawingConstants.cornerRadius)
                 if card.isFaceUp{
-                    shape
-                        .strokeBorder(lineWidth: DrawingConstants.cornerRadius)
-                    shape
+                    shape.fill()
                         .foregroundColor(.white)
+                    shape.strokeBorder(lineWidth: DrawingConstants.lineWidth)
+                    Pie(startAngle: Angle(degrees: -90), endAngle: Angle(degrees: 30)).padding(DrawingConstants.circlePadding).opacity(DrawingConstants.circleOpacity)
+
                     Text(card.content).font(font(in: geometry.size))
                 }else if card.isMatched{
                     shape.opacity(0)
                 }
                 else{
                     shape
-                        .foregroundColor(.red)
+                        .fill()
                 }
             }
         }
@@ -59,9 +59,11 @@ struct CardView: View {
     // This is how we do constants in SWIFT
     private struct DrawingConstants{
         // we're never going to create any of these structs
-        static let cornerRadius: CGFloat = 20
+        static let cornerRadius: CGFloat = 10
         static let lineWidth: CGFloat = 3
-        static let fontScale: CGFloat = 0.8
+        static let fontScale: CGFloat = 0.75
+        static let circlePadding: CGFloat = 5
+        static let circleOpacity: CGFloat = 0.5
     }
 }
 
